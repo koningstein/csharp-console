@@ -1,4 +1,6 @@
-class DigitalPet
+namespace Tamagotchi.Models;
+
+public class DigitalPet
 {
     // De gewone eigenschappen
     public string Name { get; set; }
@@ -43,12 +45,29 @@ class DigitalPet
         return "Ik ben " + this.Name + " en ik heb " + this.Energy + " energie.";
     }
 
-    public string EnergyDisplay
+    public string EnergyDisplay()
     {
-        get
-        {
-            // We plakken tekst en data aan elkaar
-            return this.Name + " - Level: " + this.Energy + "/100";
-        }
+        // We plakken tekst en data aan elkaar
+        return this.Name + " - Level: " + this.Energy + "/100";
+
     }
+
+    public string Sleep()
+    {
+        this.IsSleeping = true;
+        this.Energy += 20;
+
+        UpdateStatus();
+
+        // We printen NIET hier, maar sturen de tekst terug
+        return "Zzz... Dat deed deugd! (+20 Energie)";
+    }
+
+    public void UpdateStatus()
+    {
+        // Omdat we slapen, gaat de tijd voorbij en krijgen we honger.
+        // Zet HIER je Breakpoint (F9) op de regel hieronder:
+        this.Hunger += 5;
+    }
+
 }
