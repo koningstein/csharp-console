@@ -3,10 +3,10 @@ namespace Tamagotchi.Models;
 public class DigitalPet
 {
     // De gewone eigenschappen
-    public string Name { get; set; }
-    public int Energy { get; set; }
-    public int Hunger { get; set; }
-    public bool IsSleeping { get; set; }
+    public string Name { get; private set; }
+    public int Energy { get; private set; }
+    public int Hunger { get; private set; }
+    public bool IsSleeping { get; private set; }
 
 
     public DigitalPet(string name, int energy = 50, int hunger = 0, bool isSleeping = false)
@@ -68,6 +68,12 @@ public class DigitalPet
         // Omdat we slapen, gaat de tijd voorbij en krijgen we honger.
         // Zet HIER je Breakpoint (F9) op de regel hieronder:
         this.Hunger += 5;
+    }
+
+    public void Rename(string newName)
+    {
+        // Later kunnen we hier checks toevoegen (bijv: check op scheldwoorden)
+        this.Name = newName;
     }
 
 }
