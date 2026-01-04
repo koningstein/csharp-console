@@ -110,4 +110,14 @@ public class DigitalPet
         }
     }
 
+    public string Feed(Food food)
+    {
+        this.Energy += food.EnergyGain;
+        this.Hunger -= 10;
+
+        if (this.Hunger < 0) this.Hunger = 0;
+
+        return $"Nom nom! {this.Name} heeft een {food.Name} gegeten. (+{food.EnergyGain} Energie)";
+    }
+
 }

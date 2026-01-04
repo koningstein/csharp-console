@@ -1,59 +1,112 @@
 ﻿using Figgle.Fonts;
 using Tamagotchi.Models;
+using System.Linq;
 
-// 1. Banner tonen
-string banner = FiggleFonts.Standard.Render("Dino Game");
-Console.WriteLine(banner);
+// 1. Setup en Lijst aanmaken
+Console.WriteLine(FiggleFonts.Standard.Render("Dino Shelter"));
 
-// --- DINO 1 (Rex) ---
-// We maken hem aan (met een tijdelijke naam 'Rex')
-DigitalPet dino = new DigitalPet("Rex", isSleeping: true);
+List<DigitalPet> pets = new List<DigitalPet>();
 
-Console.WriteLine("----------------------------------");
-Console.WriteLine($"Er is een nieuwe dino gevonden! (Standaard naam: {dino.Name})");
-Console.Write("Hoe wil je hem noemen? ");
+// 2. De Voorraadkast (Dictionary)
+// Key = string (Naam), Value = Food (Object)
+Dictionary<string, Food> pantry = new Dictionary<string, Food>();
+pantry.Add("Appel", new Food("Appel", 10));
+pantry.Add("Brood", new Food("Brood", 20));
+pantry.Add("Biefstuk", new Food("Biefstuk", 50));
 
-// INPUT VRAGEN
-// Hier gebruiken we string? omdat Console.ReadLine leeg kan zijn.
-string? inputDino = Console.ReadLine();
-Console.WriteLine(dino.Rename(inputDino)); // Veilige update
+bool appRunning = true;
+DigitalPet? currentPet = null;
 
-// DETAILS TONEN (Na de input)
-Console.WriteLine(dino.GetDescription());
-Console.WriteLine(dino.EnergyDisplay());
-Console.WriteLine(dino.Sleep()); // Actie uitvoeren
+while (appRunning)
+{
+    // SITUATIE A: Geen dier gekozen
+    if (currentPet == null)
+    {
+        // Toon de status (bij start is count 0)
+        Console.WriteLine($"\n--- HOOFDMENU ({pets.Count} dieren) ---");
+        Console.WriteLine("1. Nieuw dier toevoegen");
+        Console.WriteLine("2. Alle dieren tonen");
+        Console.WriteLine("3. Dier zoeken & Selecteren");
+        Console.WriteLine("Q. Stoppen");
+        Console.Write("Maak uw keuze: ");
 
+        string choice = Console.ReadLine().ToUpper();
 
-// --- DINO 2 (Fluffy) ---
-// We maken een tweede dino aan met andere stats
-DigitalPet fluffy = new DigitalPet(
-    hunger: 10,
-    isSleeping: false,
-    name: "Fluffy",
-    energy: 80
-);
+        // Hieronder komt de switch...
+        switch (choice)
+        {
+            case "1":
+                Console.Write("Naam: ");
+                string name = Console.ReadLine();
 
-Console.WriteLine("\n----------------------------------");
-Console.WriteLine($"Er komt een tweede dino aanlopen... (Standaard naam: {fluffy.Name})");
-Console.Write("Hoe wil je deze noemen? ");
+                Console.Write("Start Energie (0-100): ");
+                string energyText = Console.ReadLine();
+                int energy = int.Parse(energyText); // <-- Van tekst naar getal
 
-// INPUT VRAGEN
-string? inputFluffy = Console.ReadLine();
-Console.WriteLine(fluffy.Rename(inputFluffy)); // Veilige update
+                Console.Write("Start Honger (0-100): ");
+                string hungerText = Console.ReadLine();
+                int hunger = int.Parse(hungerText); // <-- Van tekst naar getal
 
-// DETAILS TONEN (Hetzelfde rijtje als bij dino 1)
-Console.WriteLine(fluffy.GetDescription());
-Console.WriteLine(fluffy.EnergyDisplay());
-// (Fluffy laten we niet slapen, die is wakker)
+                // We maken het dier met de ingevoerde waardes
+                DigitalPet newPet = new DigitalPet(name, energy, hunger);
 
+                // En voegen hem toe aan de lijst
+                pets.Add(newPet);
 
-// --- OVERIGE CODE ---
-Food apple = new Food("Appel", 10);
-Console.WriteLine("\nEn we hebben eten: " + apple.Name);
+                Console.WriteLine($"{name} is toegevoegd!");
+                break;
+            case "2":
+                Console.WriteLine("\n--- OVERZICHT ---");
 
-// De Cheater test (om te zien of validatie werkt)
-DigitalPet cheater = new DigitalPet("Cheater", 9999);
-Console.WriteLine(cheater.EnergyDisplay());
+                // Loop door alle dieren die de gebruiker heeft toegevoegd
+                foreach (DigitalPet pet in pets)
+                {
+                    Console.WriteLine(pet.EnergyDisplay());
+                }
 
-// Scherm open houden
-Console.ReadLine();
+                Console.WriteLine("Druk op ENTER om terug te gaan.");
+                Console.ReadLine();
+                break;
+            case "3":
+                Console.Write("Welk dier zoek je? Typ de naam: ");
+                string searchName = Console.ReadLine();
+
+                // LINQ QUERY:
+                // Zoek in de lijst 'pets'.
+                // Pak de EERSTE (First) die voldoet aan de eis, of geef NULL (Default) als hij niet bestaat.
+                DigitalPet? foundPet = pets.FirstOrDefault(p => p.Name == searchName);
+
+                if (foundPet != null)
+                {
+                    // JA! We hebben hem gevonden.
+                    Console.WriteLine("\nGEVONDEN!");
+                    Console.WriteLine(foundPet.EnergyDisplay());
+
+                    // Hier kunnen we straks acties toevoegen, zoals voeren of slapen.
+                    Console.WriteLine("Druk op ENTER om terug te gaan.");
+                }
+                else
+                {
+                    // NEE! Hij bestaat niet.
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("Helaas, geen dier gevonden met die naam.");
+                    Console.ResetColor();
+                }
+                Console.ReadLine();
+                break;
+
+            case "Q":
+                appRunning = false; // Stop de loop
+                Console.WriteLine("Tot ziens!");
+                break;
+
+            default:
+                Console.WriteLine("Ongeldige keuze.");
+                break;
+        } // Einde switch
+    }
+    else
+    {
+
+    }
+} // Einde while
